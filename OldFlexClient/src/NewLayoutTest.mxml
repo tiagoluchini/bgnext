@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" currentState="roomListState" xmlns:ns1="org.luchini.bgclient.roomlist.*" xmlns:ns2="org.luchini.bgclient.room.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			private function alternateStateClick(event:Event):void {
+				if (currentState == "playingRoomState") {
+					currentState = "roomListState";
+				} else {
+					currentState = "playingRoomState";
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:states>
+		
+		<mx:State name="playingRoomState">
+			<mx:AddChild relativeTo="{managementBox}" position="lastChild">
+				<mx:LinkButton label="Game 2"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{managementBox}" position="lastChild">
+				<mx:CheckBox label="watch only" id="checkbox1"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{alternateStateButton}" name="label" value="Room List"/>
+		</mx:State>
+		
+		<mx:State name="roomListState">
+			<mx:AddChild relativeTo="{managementBox}" position="lastChild">
+				<mx:Label text="Filter:"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{managementBox}" position="lastChild">
+				<mx:ComboBox/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{managementBox}" position="lastChild">
+				<mx:Button label="Create room"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{alternateStateButton}" name="label" value="Playing Rooms"/>
+			<mx:AddChild relativeTo="{appControlBar}" position="before">
+				<ns1:RoomListArea width="100%" height="100%">
+				</ns1:RoomListArea>
+			</mx:AddChild>
+		</mx:State>
+	
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition id="toPlayingRoomState" fromState="*" toState="playingRoomState">
+			<mx:Parallel>
+				<mx:WipeRight target="{managementBox}" duration="300"/>
+			</mx:Parallel>
+		</mx:Transition>
+		<mx:Transition id="toRoomListState" fromState="*" toState="roomListState">
+			<mx:WipeRight target="{managementBox}" duration="300"/>
+		</mx:Transition>
+	</mx:transitions>
+	
+	<mx:ApplicationControlBar dock="true" id="appControlBar">
+		<mx:Button id="alternateStateButton" width="126" click="alternateStateClick(event)"/>
+		<mx:VRule height="16"/>
+		<mx:HBox id="managementBox">
+		</mx:HBox>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton label="Hello fulano!!"/>
+	</mx:ApplicationControlBar>
+	
+</mx:Application>

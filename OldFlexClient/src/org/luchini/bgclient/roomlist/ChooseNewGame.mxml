@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+		title="Choose Game" showCloseButton="true"
+		close="removeMe()" creationComplete="init()" borderAlpha="0.8"
+		layout="vertical">
+	<mx:Script>
+		<![CDATA[
+			import org.luchini.bgclient.communication.MessageEvent;
+			import org.luchini.bgclient.communication.BGSocket;
+			import org.luchini.bgclient.communication.ServerCommands;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+		
+			public static var ROOMCREATED:String = "roomCreated";
+			
+			[Bindable]
+			public var availableEngines:XML;
+			
+			private function init():void {
+				cmbGame.setFocus();
+			}
+			
+			private function removeMe():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function chooseGame():void {
+				BGSocket.getInstance().addEventListener(MessageEvent.SOURCE_REF_CREATEROOM, createRoomHandler);
+				ServerCommands.createRoom(cmbGame.selectedItem.@uniqueName);
+			}
+			
+			private function createRoomHandler(event:MessageEvent):void {
+				this.dispatchEvent(new RoomCreationEvent(ROOMCREATED, event.content));
+				this.removeMe();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Metadata>
+		[Event(name="roomCreated", type="org.luchini.bgclient.roomlist.RoomCreationEvent")]
+	</mx:Metadata>
+	
+	<mx:Form defaultButton="{btOk}">
+		<mx:FormItem label="Game:">
+			<mx:ComboBox id="cmbGame" 
+					dataProvider="{availableEngines.engines.GameEngineData}" 
+					labelField="@name"/>
+        </mx:FormItem>
+        <mx:FormItem>
+        	<mx:HBox>
+		        <mx:Button id="btOk" 
+		        	label="OK"
+		        	click="chooseGame()"/> 
+		        <mx:Button id="btCancel"
+		            label="Cancel"
+		            click="removeMe()"/>        		
+        	</mx:HBox>
+        </mx:FormItem>
+	</mx:Form>
+
+</mx:TitleWindow>

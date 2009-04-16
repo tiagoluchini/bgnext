@@ -1,0 +1,4 @@
+0.1 - Very simple server. Practically just binding to multiple clients and accepting very simple commands.
+0.2 - Migrated to XML
+0.3 - First version to integrate with a proper client
+0.4 - Total revamp to isolate bgserver from the game logic

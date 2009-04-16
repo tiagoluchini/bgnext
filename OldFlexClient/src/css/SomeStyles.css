@@ -1,0 +1,19 @@
+/* Just a few styles to make the panels look a little "nicer" */
+Panel { 
+	headerHeight: 17;
+	borderThickness: 0;
+	roundedBottomCorners: true;
+	
+	borderAlpha: 1;
+	highlightAlphas: 0.1, .3;
+		   
+	headerColors: #000000, #000000;
+	footerColors: #000000, #000000;
+	borderColor: #efefef;
+	backgroundColor: #efefef;
+	titleStyleName: "myTitleStyle";
+} 
+
+.myTitleStyle {
+	color: #ffffff;
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+		title="Player Nickname" showCloseButton="true"
+		close="removeMe()" creationComplete="init()" borderAlpha="0.8"
+		layout="vertical">
+	<mx:Script>
+		<![CDATA[
+			import org.luchini.bgclient.communication.ServerCommands;
+			import org.luchini.bgclient.communication.BGSocket;
+			[Bindable]
+			public var playerNick:String = "";
+		
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			private function init():void {
+				txtNickname.selectionBeginIndex = 0;
+				txtNickname.selectionEndIndex = txtNickname.text.length;
+				txtNickname.setFocus();
+			}
+			
+			private function removeMe():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function chooseName():void {
+				ServerCommands.setMyNick(txtNickname.text);
+				ServerCommands.getMyInfo();
+				this.removeMe();
+			}
+		]]>
+	</mx:Script>
+	<mx:Form defaultButton="{btOk}">
+		<mx:FormItem label="New nickname">
+            <mx:TextInput id="txtNickname" width="100%" text="{playerNick}"/>
+        </mx:FormItem>
+        <mx:FormItem>
+        	<mx:HBox>
+		        <mx:Button id="btOk" 
+		        	label="OK"
+		        	click="chooseName()"/> 
+		        <mx:Button id="btCancel"
+		            label="Cancel"
+		            click="removeMe()"/>        		
+        	</mx:HBox>
+        </mx:FormItem>
+	</mx:Form>
+</mx:TitleWindow>

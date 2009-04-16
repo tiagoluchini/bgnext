@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
+		creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import org.luchini.bgclient.communication.ServerCommands;
+			import org.luchini.bgclient.communication.BGSocket;
+			import org.luchini.bgclient.communication.MessageEvent;
+			
+			[Bindable]
+			private var playerName:String = "";
+			
+			[Bindable]
+			private var availableEngines:XML;
+
+			[Bindable]
+			private var availableEnginesChanged:XML;
+
+			private var newGameWindow:ChooseNewGame;
+
+			private function changePlayerNickName(event:MouseEvent):void {
+				var window:ChangePlayerNickName = ChangePlayerNickName(PopUpManager.createPopUp(this, 
+													ChangePlayerNickName, true));
+				window.playerNick = playerName;
+				window.x = event.stageX - 20;
+				window.y = event.stageY - 20;
+			}
+			
+			private function newGame(event:MouseEvent):void {
+				newGameWindow = ChooseNewGame(PopUpManager.createPopUp(this, ChooseNewGame, true));
+				newGameWindow.availableEngines = this.availableEngines;
+				newGameWindow.x = event.stageX - 20;
+				newGameWindow.y = event.stageY - 20;
+				newGameWindow.addEventListener(ChooseNewGame.ROOMCREATED, roomCreatedHandler);
+			}
+			
+			private function myInfoHandler(event:MessageEvent):void {
+				playerName = event.content.players[0].PlayerInfoData.@nickname;
+			}
+			
+			private function availableEnginesHandler(event:MessageEvent):void {
+				availableEngines = XML(event.content);
+				availableEnginesChanged = availableEngines.copy();
+				availableEnginesChanged.engines.insertChildBefore(
+					availableEnginesChanged.engines.GameEngineData[0], 
+					new XML("<GameEngineData uniqueName=\"ALL\" name=\"All\"/>"));
+			}
+			
+			private function init():void {
+				BGSocket.getInstance().addEventListener(MessageEvent.SOURCE_REF_GETMYINFO, myInfoHandler);
+				BGSocket.getInstance().addEventListener(MessageEvent.SOURCE_REF_LISTAVAILABLEENGINES, availableEnginesHandler);
+				ServerCommands.getMyInfo();
+				ServerCommands.listAvailableEngines();
+			}
+			
+			private function cmbFilterChangeHandler(event:Event):void {
+				this.dispatchEvent(new FilterChangeEvent("filterChanged", XML(cmdFilter.selectedItem)));
+			}
+			
+			private function roomCreatedHandler(event:RoomCreationEvent):void {
+				//Alert.show("RoomListAreaHeader " + event.roomInfo);
+				this.dispatchEvent(new RoomCreationEvent(ChooseNewGame.ROOMCREATED, event.roomInfo));
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Metadata>
+		[Event(name="filterChanged", type="org.luchini.bgclient.roomlist.FilterChangeEvent")]
+		[Event(name="roomCreated", type="org.luchini.bgclient.roomlist.RoomCreationEvent")]
+	</mx:Metadata>
+
+	<mx:Button label="New Room" click="newGame(event)"/>
+	<mx:Label text="Filter:"/>
+	<mx:ComboBox id="cmdFilter" dataProvider="{availableEnginesChanged.engines.GameEngineData}" 
+			labelField="@name" change="cmbFilterChangeHandler(event)"/>
+	<mx:Button label="Participating Rooms" enabled="false" click=""/>
+	<mx:LinkButton label="Hello {playerName}!" click="changePlayerNickName(event)"/>
+</mx:HBox>

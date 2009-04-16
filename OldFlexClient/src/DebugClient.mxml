@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+		initialize="init()">
+	<mx:Script>
+		<![CDATA[
+			import org.luchini.bgclient.communication.BGSocket;
+			import org.luchini.bgclient.communication.MessageEvent;
+			import mx.controls.Alert;
+			
+			private function init():void {
+				BGSocket.getInstance().addEventListener(MessageEvent.BY_TYPE_RESPONSE, responseHandler);
+				BGSocket.getInstance().addEventListener(MessageEvent.BY_TYPE_EVENT, eventHandler);
+				BGSocket.getInstance().addEventListener("ErrorResponse", errorHandler);
+			}
+		
+			private function btSend_click(event:Event):void {
+				BGSocket.getInstance().send(txtCommand.text);
+				txtCommand.setSelection(0, txtCommand.length);
+				txtCommand.setFocus();
+			}
+						
+			private function responseHandler(event:MessageEvent):void {
+				txtResponseConsole.text += event.content.toXMLString() + "\n\n";
+				txtResponseConsole.verticalScrollPosition = txtResponseConsole.maxVerticalScrollPosition;
+			}
+			
+			private function eventHandler(event:MessageEvent):void {
+				txtEventConsole.text += event.content.toXMLString() + "\n\n";
+				txtEventConsole.verticalScrollPosition = txtEventConsole.maxVerticalScrollPosition;
+			}
+			
+			private function errorHandler(event:MessageEvent):void {
+				Alert.show("Error code: " + event.content.@errorCode);
+			}			
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%" height="100%">
+		<mx:VBox width="100%" height="100%">
+			<mx:HBox width="100%">
+				<mx:TextInput id="txtCommand" width="100%" enter="btSend_click(event)"/>
+				<mx:Button id="btSend" label="Send" click="btSend_click(event)"/>
+			</mx:HBox>
+			<mx:VBox width="100%" height="100%">
+				<mx:TextArea id="txtResponseConsole" width="100%" height="50%"/>
+				<mx:TextArea id="txtEventConsole" width="100%" height="50%"/>				
+			</mx:VBox>
+		</mx:VBox>
+	</mx:Canvas>
+	
+</mx:Application>

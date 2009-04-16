@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" defaultButton="{btSend}">
+	
+	<mx:VBox width="80%" height="100%">
+		<mx:TextArea id="txtHistory" width="100%" height="100%" editable="false"/>
+		<mx:HBox width="100%">
+			<mx:TextInput id="txtSay" width="100%"/>
+			<mx:Button id="btSend" label="Send"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox width="20%" height="100%">
+		<mx:Accordion width="100%" height="100%">
+			<mx:VBox label="Players in the Room" width="100%">
+				<mx:List width="100%" height="100%">
+					<mx:Array>
+						<mx:String>Teste 1</mx:String>
+						<mx:String>Teste 2</mx:String>
+						<mx:String>Teste 3</mx:String>
+						<mx:String>Teste 4</mx:String>
+					</mx:Array>
+				</mx:List>
+			</mx:VBox>
+			<mx:VBox label="Player Seated" width="100%">
+				<mx:List width="100%" height="100%">
+					<mx:Array>
+						<mx:String>Teste 1</mx:String>
+						<mx:String>Teste 2</mx:String>
+						<mx:String>Teste 3</mx:String>
+						<mx:String>Teste 4</mx:String>
+					</mx:Array>
+				</mx:List>				
+			</mx:VBox>
+		</mx:Accordion>
+		<mx:HBox width="100%">
+			<mx:ButtonBar width="100%">
+				<mx:dataProvider>
+					<mx:Array>
+						<mx:String>Kick out</mx:String>
+						<mx:String>Promote</mx:String>
+						<mx:String>Seat player</mx:String>
+					</mx:Array>
+				</mx:dataProvider>
+			</mx:ButtonBar>
+			<mx:Button label="Seat"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:HBox>

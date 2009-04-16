@@ -1,0 +1,59 @@
+<project name="BGClient" default="dist" basedir="." xmlns="antlib:org.apache.tools.ant">
+
+	<taskdef resource="flexTasks.tasks"
+		classpath="${basedir}/libs/flexTasks.jar"/>
+	
+	<description>
+		BGClient ant targets
+    </description>
+
+	<!-- build properties file -->
+	<property file="build.properties"/>
+
+    <target name="dist" depends="build">
+    	<tar basedir="${dist.dir}" destfile="${dist.dir}/${tarname}"/>
+    	<gzip src="${dist.dir}/${tarname}" destfile="${dist.dir}/${targzname}"/>
+    	<delete file="${dist.dir}/${tarname}"/>
+	</target>
+	
+	<target name="clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${dist.dir}" includes="**/*"></fileset>
+		</delete>
+		<mkdir dir="${dist.path}"/>
+	</target>
+	
+	<target name="build" depends="clean">
+    	
+		<copy todir="${dist.tmp}" overwrite="true">
+    		<fileset dir="${src.dir}" includes="**/*"/>
+			<fileset dir="${distdata.dir}" includes="**/*"/>
+    	</copy>
+
+		<mxmlc
+				file="${dist.tmp}/BGClient.mxml" 
+				output="${dist.path}/BGClient.swf" 
+				keep-generated-actionscript="false">
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+			<source-path path-element="${FLEX_HOME}/frameworks"/>
+		</mxmlc>
+		
+		<html-wrapper 
+				title="BGClient"
+				file="index.html"
+				width="100%"
+				height="100%"
+	            application="bgclient"
+				swf="BGClient"
+				version-major="9"
+				version-minor="0"
+				version-revision="0"
+				history="true"
+				template="express-installation"
+				output="${dist.path}"/>
+		
+		<delete dir="${dist.tmp}"/>
+		
+	</target>
+	
+</project>

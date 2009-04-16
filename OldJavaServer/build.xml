@@ -1,0 +1,42 @@
+<project name="BGServer" default="dist" basedir="." xmlns="antlib:org.apache.tools.ant">
+
+	<description>
+		BGServer ant targets
+    </description>
+
+	<!-- build properties file -->
+	<property file="build.properties"/>
+
+	<path id="base.classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+		
+    <target name="dist" depends="clean,build">
+    	<jar destfile="${dist.path}/${jarname}"
+    		basedir="${bin.dir}"/>
+    	<copy todir="${dist.path}">
+    		<fileset dir="${lib.dir}" includes="**/*"/>
+    		<fileset dir="${distdata.dir}" includes="**/*"/>
+    	</copy>
+    	<tar basedir="${dist.dir}" destfile="${dist.dir}/${tarname}"/>
+    	<gzip src="${dist.dir}/${tarname}" destfile="${dist.dir}/${targzname}"/>
+    	<delete file="${dist.dir}/${tarname}"/>
+	</target>
+	
+	<target name="clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${dist.dir}" includes="**/*"></fileset>
+			<fileset dir="${bin.dir}" includes="**/*"></fileset>
+		</delete>
+		<mkdir dir="${dist.path}"/>
+	</target>
+	
+	<target name="build">
+		<javac destdir="${bin.dir}" classpathref="base.classpath">
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+	
+</project>

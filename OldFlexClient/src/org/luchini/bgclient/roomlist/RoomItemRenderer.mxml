@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="5" paddingRight="5" paddingBottom="5" paddingTop="5"
+		creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.containers.VBox;
+			
+			private var labelWithPopup:Label = null;
+			private var popup:PopupPlayerList = null;
+			
+			private function showPlayerPopup(event:MouseEvent):void {
+				if (labelWithPopup == null) {
+					var label:Label = Label(event.target);
+					popup = PopupPlayerList(PopUpManager.createPopUp(this, PopupPlayerList, false));	
+					popup.roomInfo = XML(data);
+					if (label == lblPlayer)
+						popup.playerListType = PopupPlayerList.PLAYERS_IN_ROOM;
+					else
+						popup.playerListType = PopupPlayerList.SEATED_PLAYERS;
+					var p:Point = label.localToGlobal(new Point(0, 0));
+					popup.x = p.x;
+					popup.y = p.y + label.height;
+					label.setStyle("textDecoration", "underline");
+					labelWithPopup = label;
+					popup.addEventListener(PopupPlayerList.REMOVED, popupRemovedHandler);
+				}
+			}
+			
+			private function popupRemovedHandler(event:Event):void {
+				if (labelWithPopup != null) {
+					labelWithPopup.setStyle("textDecoration", "none");
+					labelWithPopup = null;
+					PopUpManager.removePopUp(popup);
+					popup = null;
+				}
+			}
+			
+			private function labelRollOut(event:MouseEvent):void {
+				var label:Label = Label(event.target);
+				if (!(event.localX > 0 && event.localX < label.width &&
+						event.localY > 0)) {
+					popupRemovedHandler(null);			
+				}
+			}
+			
+			private function init():void {
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox borderStyle="outset" cornerRadius="5">
+		<mx:HBox paddingBottom="5" paddingTop="5" paddingLeft="5">
+			<!--<mx:Image width="42" height="60" source=""/>-->
+			<mx:Image width="42" height="60" source="{data.GameEngineData.@iconURL}"/>
+		</mx:HBox>
+		<mx:VBox width="100%" height="100%">
+			<mx:Label text="{data.@nickname}" fontWeight="bold"/>
+			<mx:HBox width="100%">
+				<mx:Label id="lblPlayer" text="Players: {data.playersInRoom.children().length()}" 
+						rollOver="showPlayerPopup(event)" 
+						rollOut="labelRollOut(event)"/>
+				<mx:Label id="lblSeated" text="Seated: {data.seatedPlayers.children().length()}"
+						rollOver="showPlayerPopup(event)" 
+						rollOut="labelRollOut(event)"/>
+			</mx:HBox>
+			<mx:Label text="Status: Waiting Players"/>
+		</mx:VBox>		
+	</mx:HBox>
+</mx:HBox>

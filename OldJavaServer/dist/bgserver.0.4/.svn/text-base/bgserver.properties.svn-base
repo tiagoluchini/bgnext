@@ -1,0 +1,9 @@
+bgserver.server.port: 6969
+
+# newest should always come first
+bgserver.server.protocol.qty: 1
+bgserver.server.protocol.class.0: org.luchini.bgserver.server.ServerProtocol0_4
+
+bgserver.games.qty: 2
+bgserver.games.engine.class.0: org.luchini.rgalaxy.engine.RGalaxyEngine
+bgserver.games.engine.class.1: org.luchini.coloretto.engine.ColorettoEngine

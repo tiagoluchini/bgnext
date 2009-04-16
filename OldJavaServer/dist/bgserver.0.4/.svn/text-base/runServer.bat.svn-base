@@ -1,0 +1,1 @@
+java -cp bgserver.0.4.jar;log4j-1.2.13.jar org.luchini.bgserver.server.BGServer

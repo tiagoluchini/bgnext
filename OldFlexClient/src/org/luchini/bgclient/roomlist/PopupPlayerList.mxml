@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="180" height="150" 
+		rollOut="removeMe()" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+		
+			public static const REMOVED:String = "removed";
+			
+			public static const PLAYERS_IN_ROOM:String = "playersInRoom";
+			public static const SEATED_PLAYERS:String = "seatedPlayers";
+			
+			[Bindable]
+			public var roomInfo:XML;
+			
+			public var playerListType:String = PLAYERS_IN_ROOM;
+			
+			private function removeMe():void {
+				PopUpManager.removePopUp(this);
+				this.dispatchEvent(new Event(REMOVED));
+			}
+			
+			private function init():void {
+				if (playerListType == PLAYERS_IN_ROOM)
+					playerList.dataProvider = roomInfo.playersInRoom.PlayerInfoData;
+				else
+					playerList.dataProvider = roomInfo.seatedPlayers.SeatStateData.PlayerInfoData;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:List id="playerList" width="100%" height="100%" labelField="@nickname"/>
+</mx:VBox>

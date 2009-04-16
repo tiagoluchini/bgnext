@@ -1,0 +1,108 @@
+- choose role
+  - role chosen
+- role execution
+  - phase 1
+    - provide cards (inform N canKeep)
+    - choose as many as canKeep
+    - hand limit
+  - phase 2
+    - draw N first?
+    - choose dev card to be built
+    - choose price (minus discounts)
+    - draw N after
+    - hand limit
+  - phase 3
+    - choose planet card to be built
+    - choose open card to discard and effect
+    - choose price (minus discounts - general and specific and total) or military (check military strenght - general and specific - pay for military)
+    - draw N after
+    - hand limit
+  - phase 4
+    - trade
+      - choose product to sell
+      - draw as many as needed (plus extras)
+    - consume
+      - choose product to consume (eventually more than one)
+      - choose where to consume
+      - draw N cards
+    - hand limit
+  - phase 5
+    - allocate target Windfall production(s)
+    - draw N cards
+    - hand limit
+
+
+- hand limit
+  - discard (N-10)
+
+---------------
+
+Cx->S RESENDCARDS
+S->Cx [HAND]{cards}
+S->Cx [OPENS]{player{openCards{productCard}}}
+
+---------------
+
+Cx->S RESENDSTATE
+S->Cx [CHOOSEROLEINIT] or [EXECUTIONINIT]1A;2
+S->Cx xxxPHASEINIT {params}
+
+---------------
+
+S->C1 E:[HAND]{cards}
+S->C2 E:[HAND]{cards}
+
+S->A E:[OPENS]{player{openCards{productCard}}}
+
+---------------
+
+S->A E:[CHOOSEROLEINIT]{tablePoints}{rolesAvailable}
+
+C1->S CHOOSEROLE 1A
+C2->S CHOOSEROLE 2
+
+S->A E:[ROLESCHOSENCOMPLETE]{who}
+
+----------------
+
+S->A E:[EXECUTIONINIT]{roleChosen{who}}
+
+---------------
+
+S->C1 E:[EXPLOREPHASEINIT]{cards}{keep 2}
+S->C2 E:[EXPLOREPHASEINIT]{cards}{keep 1}
+
+C1->S KEEP {cards}
+C2->S KEEP {cards}
+
+S->A E:[EXPLOREPHASECOMPLETE]{who}{cardsSeen X}{cardsKept Y}
+
+---------------
+
+S->C1 E:[DEVELOPPHASEINIT]{cards}{discount 0}
+S->C2 E:[DEVELOPPHASEINIT]{cards}{discount 1}
+
+C1->S DEVELOP {card}{payCards}
+C2->S DEVELOP {card}{payCards}
+
+S->A E:[DEVELOPPHASECOMPLETE]{who}{cardOpen}
+
+S->Cx E:[DEVELOPPHASEDRAWAFTER]{cards}
+
+---------------
+
+S->C1 SETTLEPHASEINIT
+S->C1 SETTLE {world}{payCards}{discard}
+
+S->A SETTLEPHASECOMPLETE {who}{cardOpen}
+
+S->C1 SETTLEPHASEDRAWAFTER {cards}
+
+---------------
+
+S->Cx E:[HANDLIMIT]{discard 2}
+Cx->S DISCARD {card}
+
+---------------
+
+(start over)

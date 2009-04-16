@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	xmlns:roomlist="org.luchini.bgclient.roomlist.*" 
+	xmlns:room="org.luchini.bgclient.room.*"
+	xmlns:mccune="com.dougmccune.containers.*"
+	xmlns:mccuneControls="com.dougmccune.controls.*"
+	paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" initialize="init()">
+	
+	<mx:Style source="css/SuperTabStyles.css"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import org.luchini.bgclient.roomlist.ConnectingWindow;
+			import org.luchini.bgclient.roomlist.RoomListArea;
+			import com.dougmccune.containers.tabBarClasses.SuperTab;
+			import mx.controls.Alert;
+			import org.luchini.bgclient.roomlist.RoomCreationEvent;
+			import org.luchini.bgclient.roomlist.ChooseNewGame;
+			import org.luchini.bgclient.communication.MessageEvent;
+			import org.luchini.bgclient.communication.ServerCommands;
+			import org.luchini.bgclient.room.RoomArea;
+			import org.luchini.bgclient.roomlist.EnterRoomEvent;
+			import org.luchini.bgclient.communication.BGSocket;
+			
+			private var _enteringRoomInfo:XML;
+			
+			private var _connectingWindow:ConnectingWindow;
+			
+			private function init():void {
+				_connectingWindow = ConnectingWindow(PopUpManager.createPopUp(this, ConnectingWindow, true));
+				PopUpManager.centerPopUp(_connectingWindow);
+				BGSocket.getInstance().addEventListener(BGSocket.SERVER_CONNECTED, serverConnectedHandler);
+				BGSocket.getInstance().addEventListener(BGSocket.COMMUNICATION_ERROR, commErrorHandler);
+				BGSocket.getInstance().connect();
+			}
+			
+			private function serverConnectedHandler(event:Event):void {
+				BGSocket.getInstance().addEventListener(MessageEvent.SOURCE_REF_ENTERROOM, enterRoomResponseHandler);
+				PopUpManager.removePopUp(_connectingWindow);
+			}
+			
+			private function commErrorHandler(event:Event):void {
+				Alert.show("There was an error connecting to server!");
+			}
+			
+			private function enterRoomHandler(event:EnterRoomEvent):void {
+				_enteringRoomInfo = event.selectedRoomInfo;
+				//ServerCommands.enterRoom(_enteringRoomInfo.@uniqueID);
+				mainViewStack.selectedIndex = 1;
+				createTab(_enteringRoomInfo.@nickname);
+			}
+			
+			private function enterRoomResponseHandler(event:MessageEvent):void {
+				createTab(_enteringRoomInfo.@nickname);
+			}
+			
+			private function createTab(name:String):void {
+				var roomArea:RoomArea = new RoomArea();
+				roomArea.label = name;
+				mainTab.addChild(roomArea);
+				
+				//mainTab.selectedIndex = mainTab.getChildren().length;				
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="mainViewStack" width="100%" height="100%">
+		<roomlist:RoomListArea id="roomListArea" enterRoom="enterRoomHandler(event)"/>
+		<mccune:SuperTabNavigator id="mainTab" scrollSpeed="25" dropShadowEnabled="false"
+				stopScrollingEvent="{MouseEvent.MOUSE_OUT}" startScrollingEvent="{MouseEvent.MOUSE_OVER}"
+				width="100%" height="100%" horizontalGap="0"
+				closePolicy="{SuperTab.CLOSE_ROLLOVER}"
+				>
+		</mccune:SuperTabNavigator>
+	</mx:ViewStack>	
+	
+</mx:Application>

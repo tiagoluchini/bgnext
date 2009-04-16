@@ -1,0 +1,62 @@
+SERVER
+
+ok - BUG: if you have at least one game created and try to quit there is a server error
+
+ok - REVIEW: the createroom command should respond with a RoomInfo event (it will be easier for client to decide 
+        whether to join automatically or not)
+
+- re-enable and test the responses
+  (some tests carried out.. more to come - mainly subscribegamelist - including renaming)
+
+- it seems that we'll need another communication "channel" (event route) for host related stuff (desireToJoin only?)
+
+ok - a serverCommand to list the available engines
+
+CLIENT
+
+ok - trap the exit/refresh events and quit the server on those occasions (connection is being left open)
+
+--------------
+
+ENHANCEMENT: backdoor? (for management purposes?)
+
+ENHANCEMENT: user authentication (for record keeping)
+
+--------------
+
+ok - enterRoom {gameid}
+  should allow you to enter the game "room"
+  
+ok - quitRoom {gameid}
+  you exit the game "room" AND if playing, you also leave the seat open
+  game changes to replacement_needed
+  
+ok - seatGame {gameid}
+  works only if you are already inside that game "room"
+  take next available seat if game is not started
+  NO: (just too complex) start game automatically if 4th seat is taken
+  
+ok - leaveGame {gameid}
+  abandon the game but stay in the room
+
+- desireToJoinGame {gameid}{seatid}
+  player in the "room" informs desire to play in an available seat
+  only available if game is in REPLACEMENT_NEEDED
+
+--------------
+
+ok - startGame {gameid}
+  run only by the host
+  starts the game
+
+- promote {gameid}{playerHash}
+  run only by the host
+  playerHash becomes the host
+  
+- kick {gameid}{playerHash}
+  run only by the host
+  forces a quitGame on that playerHash
+  
+- allocateReplacement {gameid}{playerHash}{seatid}
+  run only by the host
+  allocates the playerHash (already in the "room") to that seat
